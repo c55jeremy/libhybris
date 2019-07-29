@@ -15,11 +15,16 @@ bin_PROGRAMS = \
 	test_wifi \
 	test_hwc2 \
 	test_hwcomposer \
-	test_nfc
+	test_nfc \
+	test_p
 
 if WANT_WAYLAND
 bin_PROGRAMS += test_camera
 endif
+
+test_p_SOURCES = test_p.cpp
+test_p_LDADD = \
+	$(top_builddir)/common/p/p.la
 
 test_audio_SOURCES = test_audio.c
 test_audio_CFLAGS = \

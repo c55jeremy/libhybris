@@ -3022,8 +3022,12 @@ void hybris_set_hook_callback(hybris_hook_cb callback)
 #define LINKER_NAME_MM "mm"
 #define LINKER_NAME_N "n"
 #define LINKER_NAME_O "o"
+#define LINKER_NAME_P "p"
 
-#if defined(WANT_LINKER_O)
+#if defined(WANT_LINKER_P)
+#define LINKER_VERSION_DEFAULT 28
+#define LINKER_NAME_DEFAULT LINKER_NAME_P
+#elif defined(WANT_LINKER_O)
 #define LINKER_VERSION_DEFAULT 27
 #define LINKER_NAME_DEFAULT LINKER_NAME_O
 #elif defined(WANT_LINKER_N)
