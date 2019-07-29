@@ -7,7 +7,6 @@ bin_PROGRAMS = \
 	test_sensors \
 	test_input \
 	test_lights \
-	test_camera \
 	test_vibrator \
 	test_media \
 	test_recorder \
@@ -17,6 +16,10 @@ bin_PROGRAMS = \
 	test_hwc2 \
 	test_hwcomposer \
 	test_nfc
+
+if WANT_WAYLAND
+bin_PROGRAMS += test_camera
+endif
 
 test_audio_SOURCES = test_audio.c
 test_audio_CFLAGS = \

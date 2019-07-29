@@ -40,20 +40,26 @@ hybris/egl/platforms/common/wayland-egl.pc
 hybris/egl/platforms/hwcomposer/hwcomposer-egl.pc
 hybris/glesv1/glesv1_cm.pc
 hybris/glesv2/glesv2.pc
+hybris/gralloc/libgralloc.pc
 hybris/hardware/libhardware.pc
+hybris/hwc2/libhwc2.pc
 hybris/input/libis.pc
 hybris/libnfc_ndef_nxp/libnfc_ndef_nxp.pc
 hybris/libnfc_nxp/libnfc_nxp.pc
 hybris/libsync/libsync.pc
+hybris/media/libmedia.pc
+hybris/opencl/OpenCL.pc
 hybris/properties/libandroid-properties.pc
 hybris/sf/libsf.pc
 hybris/vibrator/libvibrator.pc
+hybris/wifi/libwifi.pc
 
 # Util binaries
 hybris/utils/getprop
 hybris/utils/setprop
 
 # Test binaries
+hybris/tests/test_audio
 hybris/tests/test_camera
 hybris/tests/test_egl_configs
 hybris/tests/test_gps
@@ -66,4 +72,11 @@ hybris/tests/test_lights
 hybris/tests/test_offscreen_rendering
 hybris/tests/test_sensors
 hybris/tests/test_ui
+hybris/tests/test_hwc2
+hybris/tests/test_hwcomposer
+hybris/tests/test_media
+hybris/tests/test_opencl
+hybris/tests/test_recorder
+hybris/tests/test_vibrator
+hybris/tests/test_wifi
 
