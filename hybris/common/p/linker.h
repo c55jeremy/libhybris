@@ -27,20 +27,19 @@
  */
 
 #pragma once
-
 #if HYBRIS_ENABLED
 #include "compat/hybris_compat.h"
 #endif
 
 #include <dlfcn.h>
-#include "codebase/bionic/libc/include/android/dlext.h"
+#include <android/dlext.h>
 #include <elf.h>
 #include <inttypes.h>
 #include <link.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "codebase/bionic/libc/private/bionic_page.h"
+#include "private/bionic_page.h"
 #include "linked_list.h"
 #include "linker_common_types.h"
 #include "linker_logger.h"

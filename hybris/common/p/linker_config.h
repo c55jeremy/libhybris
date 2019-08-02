@@ -28,14 +28,16 @@
 
 #pragma once
 
+#include <android/api-level.h>
+
 #include <stdlib.h>
 #include <limits.h>
+#include "private/bionic_macros.h"
+
 #include <memory>
 #include <string>
 #include <vector>
 #include <unordered_map>
-#include "codebase/bionic/libc/include/android/api-level.h"
-#include "codebase/bionic/libc/private/bionic_macros.h"
 
 class NamespaceLinkConfig {
  public:

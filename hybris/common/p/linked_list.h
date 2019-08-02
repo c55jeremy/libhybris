@@ -28,7 +28,6 @@
 
 #pragma once
 #include <stdio.h>
-
 #include "private/bionic_macros.h"
 
 template<typename T>
@@ -102,21 +101,15 @@ class LinkedList {
   }
 
   void push_back(T* const element) {
-	  printf("Jeremy: push_back\n");
     LinkedListEntry<T>* new_entry = Allocator::alloc();
-    printf("==>New Entry %p\n",reinterpret_cast<uintptr_t>(new_entry));
     new_entry->next = nullptr;
     new_entry->element = element;
     if (tail_ == nullptr) {
-    	printf("Jeremy: tail_ %p\n",reinterpret_cast<uintptr_t>(tail_));
       tail_ = head_ = new_entry;
-      printf("Jeremy: pushback OK\n");
     } else {
-    	printf("Jeremy: tail_->next %p\n",reinterpret_cast<uintptr_t>(tail_->element));
       tail_->next = new_entry;
       tail_ = new_entry;
     }
-    printf("Jeremy: push_back done!\n");
   }
 
   T* pop_front() {

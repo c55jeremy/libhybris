@@ -48,7 +48,7 @@
 #include "debuggerd/handler.h"
 #endif
 
-#include "codebase/bionic/libc/async_safe/log.h"
+#include <async_safe/log.h>
 
 #include <vector>
 
@@ -503,8 +503,12 @@ extern soinfo* get_dummy_info(const char* linker_path,
         const soinfo& linker_si,
         const link_map& linker_map);
 void* (*_get_hooked_symbol)(const char *sym, const char *requester);
-
+#ifdef WANT_ARM_TRACING
+xx
+extern "C" void android_linker_init(int sdk_version, void* (*get_hooked_symbol)(const char*, const char*), int enable_linker_gdb_support, void *(create_wrapper)(const char*, void*, int)) {
+#else
 extern "C" void android_linker_init(int sdk_version, void* (*get_hooked_symbol)(const char*, const char*), int enable_linker_gdb_support) {
+#endif
 	if (sdk_version > 0)
 	    set_application_target_sdk_version(sdk_version);
 	//Refer ot __linker_init_post_relocation...
@@ -516,8 +520,6 @@ extern "C" void android_linker_init(int sdk_version, void* (*get_hooked_symbol)(
 		async_safe_fatal("unable to stat \"/proc/self/exe\": %s",
 				strerror(errno));
 	}
-//	const char* executable_path = get_executable_path();
-//	printf("Jeremy:executable_path =%s\n\n", executable_path);
 
 	parse_LD_LIBRARY_PATH("/system/lib64");
 	parse_LD_PRELOAD(nullptr);

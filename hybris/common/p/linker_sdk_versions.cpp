@@ -27,8 +27,8 @@
  */
 
 #include "linker.h"
+#include <android/api-level.h>
 #include <atomic>
-#include "codebase/bionic/libc/include/android/api-level.h"
 
 static std::atomic<uint32_t> g_target_sdk_version(__ANDROID_API__);
 

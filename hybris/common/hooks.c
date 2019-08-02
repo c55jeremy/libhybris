@@ -3104,6 +3104,7 @@ static void* __hybris_get_hooked_symbol(const char *sym, const char *requester)
     struct _hook key;
     int sdk_version = -1;
 
+    printf("Hook Symbol: %s\n", sym);
     /* First check if we have a callback registered which could
      * give us a context specific hook implementation */
     if (hook_callback)
@@ -3125,7 +3126,7 @@ static void* __hybris_get_hooked_symbol(const char *sym, const char *requester)
     key.name = sym;
     sdk_version = get_android_sdk_version();
 
-#if defined(WANT_LINKER_MM) || defined(WANT_LINKER_N) || defined(WANT_LINKER_O)
+#if defined(WANT_LINKER_MM) || defined(WANT_LINKER_N) || defined(WANT_LINKER_O)  || defined(WANT_LINKER_P)
     if (sdk_version > 21)
         found = bsearch(&key, hooks_mm, HOOKS_SIZE(hooks_mm), sizeof(hooks_mm[0]), hook_cmp);
 #endif
@@ -3202,6 +3203,10 @@ static void __hybris_linker_init()
     /* See https://source.android.com/source/build-numbers.html for
      * an overview over available SDK version numbers and which
      * Android version they relate to. */
+#if defined(WANT_LINKER_P)
+    if (sdk_version <= 28)
+        name = LINKER_NAME_P;
+#endif
 #if defined(WANT_LINKER_O)
     if (sdk_version <= 27)
         name = LINKER_NAME_O;
@@ -3268,6 +3273,24 @@ static void __hybris_linker_init()
     }
 
     linker_initialized = 1;
+
+    _android_linker_init= _android_linker_init != NULL ? _android_linker_init: (void*)0xdead1;
+    _android_dlerror= _android_dlerror != NULL ? _android_dlerror: (void*)0xdead2;
+    _android_dlsym= _android_dlsym != NULL ? _android_dlsym: (void*)0xdead3;
+    _android_dlvsym= _android_dlvsym != NULL ? _android_dlvsym: (void*)0xdead4;
+    _android_dladdr= _android_dladdr != NULL ? _android_dladdr: (void*)0xdead5;
+    _android_dlclose = _android_dlclose != NULL ? _android_dlclose: (void*)0xdead6;
+    _android_dl_unwind_find_exidx != NULL ? _android_dl_unwind_find_exidx: (void*)0xdead7;
+    _android_dl_iterate_phdr != NULL ? _android_dl_iterate_phdr: (void*)0xdead8;
+    _android_get_LD_LIBRARY_PATH != NULL ? _android_get_LD_LIBRARY_PATH: (void*)0xdead9;
+    _android_update_LD_LIBRARY_PATH != NULL ? _android_update_LD_LIBRARY_PATH: (void*)0xdead10;
+    _android_dlopen_ext != NULL ? _android_dlopen_ext: (void*)0xdead11;
+    _android_set_application_target_sdk_version != NULL ? _android_set_application_target_sdk_version: (void*)0xdead12;
+    _android_get_application_target_sdk_version != NULL ? _android_get_application_target_sdk_version: (void*)0xdead13;
+    _android_create_namespace != NULL ? _android_create_namespace: (void*)0xdead14;
+    _android_init_anonymous_namespace != NULL ? _android_init_anonymous_namespace: (void*)0xdead15;
+    _android_dlwarning != NULL ? _android_dlwarning : (void*)0xdead16;
+    _android_get_exported_namespace != NULL ? _android_get_exported_namespace : (void*)0xdead17;
 }
 
 #define ENSURE_LINKER_IS_LOADED() \
@@ -3320,7 +3343,7 @@ void* android_dlsym(void* handle, const char* symbol)
     if (!_android_dlsym) {
         return NULL;
     }
-
+    printf("J:android_dlsym %p\n", handle);
     return _android_dlsym(handle, symbol);
 }
 

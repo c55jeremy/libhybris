@@ -1,0 +1,4 @@
+/bs106/libhybris/hybris/tests-android/build/CMakeFiles/rebuild_cache.dir
+/bs106/libhybris/hybris/tests-android/build/CMakeFiles/simple.dir
+/bs106/libhybris/hybris/tests-android/build/CMakeFiles/edit_cache.dir
+/bs106/libhybris/hybris/tests-android/build/CMakeFiles/android-test.dir

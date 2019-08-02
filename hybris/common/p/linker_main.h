@@ -28,10 +28,11 @@
 
 #pragma once
 
+#include <android/dlext.h>
+
 #include <unordered_map>
 #include <vector>
 
-#include "codebase/bionic/libc/include/android/dlext.h"
 #include "linker_namespaces.h"
 #include "linker_soinfo.h"
 

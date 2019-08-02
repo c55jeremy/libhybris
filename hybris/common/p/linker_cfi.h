@@ -33,7 +33,7 @@
 
 #include <algorithm>
 
-#include "codebase/bionic/libc/private/CFIShadow.h"
+#include "private/CFIShadow.h"
 
 // This class keeps the contents of CFI shadow up-to-date with the current set of loaded libraries.
 // See the comment in CFIShadow.h for more context.

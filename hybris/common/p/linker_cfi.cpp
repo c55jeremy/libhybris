@@ -1,4 +1,3 @@
-
 /*
  * Copyright (C) 2008 The Android Open Source Project
  * All rights reserved.
@@ -33,8 +32,8 @@
 
 #include "linker_debug.h"
 #include "linker_globals.h"
-#include "codebase/bionic/libc/private/bionic_page.h"
-#include "codebase/bionic/libc/private/bionic_prctl.h"
+#include "private/bionic_page.h"
+#include "private/bionic_prctl.h"
 
 #include <sys/mman.h>
 #include <sys/types.h>

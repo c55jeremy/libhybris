@@ -30,7 +30,7 @@
 
 #include <pthread.h>
 
-#include "codebase/bionic/libc/private/ScopedPthreadMutexLocker.h"
+#include "private/ScopedPthreadMutexLocker.h"
 
 // This function is an empty stub where GDB locates a breakpoint to get notified
 // about linker activity.

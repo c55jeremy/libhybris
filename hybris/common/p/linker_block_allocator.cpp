@@ -59,7 +59,6 @@ LinkerBlockAllocator::LinkerBlockAllocator(size_t block_size)
     page_list_(nullptr),
     free_block_list_(nullptr)
 {
-	printf("==>>>Block Size = %d\n", block_size);
 }
 
 void* LinkerBlockAllocator::alloc() {
@@ -78,7 +77,6 @@ void* LinkerBlockAllocator::alloc() {
     free_block_list_ = block_info->next_block;
   }
 
-  printf("====>Alloc:block_size_ = %d\n",block_size_);
   memset(block_info, 0, block_size_);
 
   return block_info;
@@ -100,7 +98,6 @@ void LinkerBlockAllocator::free(void* block) {
   if (offset % block_size_ != 0) {
     abort();
   }
-  printf("====>Free:block_size_ = %d\n",block_size_);
   memset(block, 0, block_size_);
 
   FreeBlockInfo* block_info = reinterpret_cast<FreeBlockInfo*>(block);

@@ -1,4 +1,3 @@
-
 /*
  * Copyright (C) 2007 The Android Open Source Project
  * All rights reserved.
@@ -40,9 +39,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "android/api-level.h"
+#include <android/api-level.h>
 
-#include "bionic/pthread_internal.h"
+#include <bionic/pthread_internal.h>
 #include "private/bionic_tls.h"
 #include "private/ScopedPthreadMutexLocker.h"
 
@@ -306,6 +305,7 @@ bool __loader_android_link_namespaces_all_libs(android_namespace_t* namespace_fr
 }
 
 android_namespace_t* __loader_android_get_exported_namespace(const char* name) {
+    printf("\nJeremy: __loader_android_get_exported_namespace\n");
   return get_exported_namespace(name);
 }
 
@@ -338,17 +338,29 @@ soinfo* get_dummy_info(const char* linker_path, const soinfo& linker_si,
 
 extern "C" {
 void* android_dlopen(const char* filename, int flag) {
-	printf("Jeremy: Hello android_dlopen called\n\n");
+	printf("Jeremy: android_dlopen called\n\n");
   const void* caller_addr = __builtin_return_address(0);
 
   void* h = __loader_dlopen(filename, flag, caller_addr);
-  printf("Jeremy: Hello android_dlopen in addr %p %p\n\n", caller_addr, h);
+  printf("Jeremy: android_dlopen in addr %p %p\n\n", caller_addr, h);
   return h;
 }
 
 void* android_dlsym(void* handle, const char* symbol) {
+    printf("Jeremy: android_dlsym called HANDLE=%p\n\n", handle);
   const void* caller_addr = __builtin_return_address(0);
-  return __loader_dlsym(handle, symbol, caller_addr);
+
+   void *s = __loader_dlsym(handle, symbol, caller_addr);
+   printf("Jeremy: handle %p android_dlsym %s in addr %p\n\n", handle, symbol, s);
+   return s;
+}
+
+int android_dlclose(void* handle) {
+  return __loader_dlclose(handle);
+}
+
+struct android_namespace_t* android_get_exported_namespace(const char* name) {
+  return __loader_android_get_exported_namespace(name);
 }
 
 }

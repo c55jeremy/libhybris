@@ -37,14 +37,15 @@
 #include <android-base/scopeguard.h>
 #include <android-base/strings.h>
 
+#include <async_safe/log.h>
+
 #include <stdlib.h>
 
 #include <string>
 #include <unordered_map>
-#include "codebase/bionic/libc/async_safe/log.h"
 
 #define _REALLY_INCLUDE_SYS__SYSTEM_PROPERTIES_H_
-#include "codebase/bionic/libc/include/sys/_system_properties.h"
+#include <sys/_system_properties.h>
 
 class ConfigParser {
  public:

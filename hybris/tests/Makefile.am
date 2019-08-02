@@ -22,9 +22,13 @@ if WANT_WAYLAND
 bin_PROGRAMS += test_camera
 endif
 
-test_p_SOURCES = test_p.cpp
+test_p_SOURCES = test_p.c
+test_p_CFLAGS = -I$(top_srcdir)/include
 test_p_LDADD = \
-	$(top_builddir)/common/p/p.la
+    -lm \
+    $(top_builddir)/common/libhybris-common.la
+     
+##	$(top_builddir)/common/p/p.la
 
 test_audio_SOURCES = test_audio.c
 test_audio_CFLAGS = \

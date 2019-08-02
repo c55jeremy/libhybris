@@ -37,7 +37,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "codebase/bionic/libc/async_safe/log.h"
+#include <async_safe/log.h>
 
 #include "linker_debug.h"
 #include "linker_globals.h"
@@ -394,7 +394,7 @@ void soinfo::call_constructors() {
   }
 
   printf("------------------ %s\n", soname_);
-  if (soname_ != nullptr && strcmp(soname_, "libc.so") == 0) {
+  if (soname_ != nullptr && (strcmp(soname_, "libc.so") == 0 || strcmp(soname_, "libdl.so") == 0) ) {
 	  printf("--------SKIP---------- %s\n", soname_);
 	  constructors_called = 1;
 	  return;
@@ -443,7 +443,7 @@ void soinfo::call_destructors() {
     return;
   }
   printf("1 %s\n", soname_);
-  if (soname_ != nullptr && strcmp(soname_, "libc.so") == 0) {
+  if (soname_ != nullptr && (strcmp(soname_, "libc.so") == 0 || strcmp(soname_, "libdl.so") == 0)) {
 	  printf("2  NOT DESTRUCT==>%s\n", soname_);
 	  return;
   }

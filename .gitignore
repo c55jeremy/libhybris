@@ -59,6 +59,7 @@ hybris/utils/getprop
 hybris/utils/setprop
 
 # Test binaries
+hybris/tests/test_p
 hybris/tests/test_audio
 hybris/tests/test_camera
 hybris/tests/test_egl_configs

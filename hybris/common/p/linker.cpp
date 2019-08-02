@@ -26,6 +26,7 @@
  * SUCH DAMAGE.
  */
 
+#include <android/api-level.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <inttypes.h>
@@ -45,6 +46,10 @@
 
 #include <android-base/properties.h>
 #include <android-base/scopeguard.h>
+
+#include <async_safe/log.h>
+
+// Private C library headers.
 
 #include "linker.h"
 #include "linker_block_allocator.h"
@@ -66,8 +71,6 @@
 
 #include "android-base/strings.h"
 #include "android-base/stringprintf.h"
-#include "codebase/bionic/libc/async_safe/log.h"
-#include "codebase/bionic/libc/include/android/api-level.h"
 #if !HYBRIS_ENABLED
 #include "ziparchive/zip_archive.h"
 #else
@@ -107,6 +110,7 @@ static const char* const kLdConfigVndkLiteFilePath = "/system/etc/ld.config.vndk
 static const char* const kSystemLibDir     = "/system/lib64";
 static const char* const kOdmLibDir        = "/odm/lib64";
 static const char* const kVendorLibDir     = "/vendor/lib64";
+static const char* const kVendorLibEglDir  = "/vendor/lib64/egl";
 static const char* const kAsanSystemLibDir = "/data/asan/system/lib64";
 static const char* const kAsanOdmLibDir    = "/data/asan/odm/lib64";
 static const char* const kAsanVendorLibDir = "/data/asan/vendor/lib64";
@@ -125,6 +129,7 @@ static const char* const kDefaultLdPaths[] = {
   kSystemLibDir,
   kOdmLibDir,
   kVendorLibDir,
+  kVendorLibEglDir,
   nullptr
 };
 
@@ -289,22 +294,11 @@ static void notify_gdb_of_unload(soinfo* info) {
 }
 
 LinkedListEntry<soinfo>* SoinfoListAllocator::alloc() {
-#if 1
-	LinkedListEntry<soinfo>* entry = g_soinfo_links_allocator.alloc();
-	printf("==> Alloc %p\n", reinterpret_cast<uintptr_t>(entry));
-	return entry;
-#else
   return g_soinfo_links_allocator.alloc();
-#endif
 }
 
 void SoinfoListAllocator::free(LinkedListEntry<soinfo>* entry) {
-#if 1
-	printf("==>Free %p\n", reinterpret_cast<uintptr_t>(entry));
   g_soinfo_links_allocator.free(entry);
-#else
-  g_soinfo_links_allocator.free(entry);
-#endif
 }
 
 LinkedListEntry<android_namespace_t>* NamespaceListAllocator::alloc() {
@@ -1081,6 +1075,7 @@ static int open_library_on_paths(ZipArchiveCache* zip_archive_cache,
     }
 
     if (fd != -1) {
+        printf("Jeremy: fd OK: %s\n", buf);
       return fd;
     }
   }
@@ -1614,6 +1609,7 @@ bool find_libraries(android_namespace_t* ns,
                                &load_tasks,
                                rtld_flags,
                                search_linked_namespaces || is_dt_needed)) {
+        printf("Jeremy:Error find_library_internal\n");
       return false;
     }
 
@@ -1652,6 +1648,7 @@ bool find_libraries(android_namespace_t* ns,
 
   for (auto&& task : load_list) {
     if (!task->load()) {
+        printf("Jeremy:Error task->load()\n");
       return false;
     }
   }
@@ -1660,6 +1657,7 @@ bool find_libraries(android_namespace_t* ns,
   for (auto&& task : load_tasks) {
     soinfo* si = task->get_soinfo();
     if (!si->is_linked() && !si->prelink_image()) {
+        printf("Jeremy:Error !si->is_linked() && !si->prelink_image()\n");
       return false;
     }
   }
@@ -1732,7 +1730,18 @@ bool find_libraries(android_namespace_t* ns,
              needed_by_ns->get_name(),
              needed_by_ns,
              it == local_group_roots.end() ? "yes" : "no");
-
+      printf("Jeremy find_libraries: Crossing namespace boundary (si=%s@%p, si_ns=%s@%p, needed_by=%s@%p, ns=%s@%p, needed_by_ns=%s@%p) adding to local_group_roots: %s",
+             si->get_realpath(),
+             si,
+             si->get_primary_namespace()->get_name(),
+             si->get_primary_namespace(),
+             needed_by == nullptr ? "(nullptr)" : needed_by->get_realpath(),
+             needed_by,
+             ns->get_name(),
+             ns,
+             needed_by_ns->get_name(),
+             needed_by_ns,
+             it == local_group_roots.end() ? "yes" : "no");
       if (it == local_group_roots.end()) {
         local_group_roots.push_back(si);
       }
@@ -1762,6 +1771,8 @@ bool find_libraries(android_namespace_t* ns,
       if (!si->is_linked() && si->get_primary_namespace() == local_group_ns) {
         if (!si->link_image(global_group, local_group, extinfo) ||
             !get_cfi_shadow()->AfterLoad(si, solist_get_head())) {
+            printf("Jeremy:Error %d", si->link_image(global_group, local_group, extinfo) );
+            printf("Jeremy:Error %s !get_cfi_shadow()->AfterLoad(si, solist_get_head()\n", si->get_realpath());
           return false;
         }
       }
@@ -1770,6 +1781,7 @@ bool find_libraries(android_namespace_t* ns,
     });
 
     if (!linked) {
+        printf("Jeremy:Error !linked \n");
       return false;
     }
   }
@@ -2168,6 +2180,7 @@ void* do_dlopen(const char* name, int flags,
 
   ProtectedDataGuard guard;
   soinfo* si = find_library(ns, translated_name, flags, extinfo, caller);
+  printf("translated_name = %s (%p)\n", translated_name, si);
   loading_trace.End();
 
   if (si != nullptr) {
@@ -2761,13 +2774,13 @@ bool soinfo::relocate(const VersionTracker& version_tracker, ElfRelIteratorT&& r
       const version_info* vi = nullptr;
       sym_addr = reinterpret_cast<ElfW(Addr)>(_get_hooked_symbol(sym_name, get_realpath()));
       if (!sym_addr) {
-      if (!lookup_version_info(version_tracker, sym, sym_name, &vi)) {
-        return false;
-      }
+        if (!lookup_version_info(version_tracker, sym, sym_name, &vi)) {
+          return false;
+        }
 
-      if (!soinfo_do_lookup(this, sym_name, vi, &lsi, global_group, local_group, &s)) {
-        return false;
-      }
+        if (!soinfo_do_lookup(this, sym_name, vi, &lsi, global_group, local_group, &s)) {
+          return false;
+        }
       }
 
       if (sym_addr == 0 && s == nullptr) {
@@ -2776,6 +2789,8 @@ bool soinfo::relocate(const VersionTracker& version_tracker, ElfRelIteratorT&& r
         if (ELF_ST_BIND(s->st_info) != STB_WEAK) {
           DL_ERR("cannot locate symbol \"%s\" referenced by \"%s\"...", sym_name, get_realpath());
           return false;
+        }else{
+          DL_ERR("Weak not-located symbol \"%s\" referenced by \"%s\"...", sym_name, get_realpath());
         }
 
         /* IHI0044C AAELF 4.5.1.1:
@@ -3608,6 +3623,7 @@ bool soinfo::link_image(const soinfo_list_t& global_group, const soinfo_list_t& 
   VersionTracker version_tracker;
 
   if (!version_tracker.init(this)) {
+      printf("Jeremy LinkImage 1");
     return false;
   }
 
@@ -3655,10 +3671,12 @@ bool soinfo::link_image(const soinfo_list_t& global_group, const soinfo_list_t& 
           global_group, local_group);
 
       if (!relocated) {
+          printf("Jeremy LinkImage 2");
         return false;
       }
     } else {
       DL_ERR("bad android relocation header.");
+      printf("Jeremy LinkImage 3");
       return false;
     }
   }
@@ -3675,6 +3693,7 @@ bool soinfo::link_image(const soinfo_list_t& global_group, const soinfo_list_t& 
     DEBUG("[ relocating %s rela ]", get_realpath());
     if (!relocate(version_tracker,
             plain_reloc_iterator(rela_, rela_count_), global_group, local_group)) {
+        printf("Jeremy LinkImage 4");
       return false;
     }
   }
@@ -3682,6 +3701,7 @@ bool soinfo::link_image(const soinfo_list_t& global_group, const soinfo_list_t& 
     DEBUG("[ relocating %s plt rela ]", get_realpath());
     if (!relocate(version_tracker,
             plain_reloc_iterator(plt_rela_, plt_rela_count_), global_group, local_group)) {
+        printf("Jeremy LinkImage %s\n", get_realpath());
       return false;
     }
   }
@@ -3724,6 +3744,7 @@ bool soinfo::link_image(const soinfo_list_t& global_group, const soinfo_list_t& 
   // We can also turn on GNU RELRO protection if we're not linking the dynamic linker
   // itself --- it can't make system calls yet, and will have to call protect_relro later.
   if (!is_linker() && !protect_relro()) {
+      printf("Jeremy LinkImage 6");
     return false;
   }
 
@@ -3733,6 +3754,7 @@ bool soinfo::link_image(const soinfo_list_t& global_group, const soinfo_list_t& 
                                        extinfo->relro_fd) < 0) {
       DL_ERR("failed serializing GNU RELRO section for \"%s\": %s",
              get_realpath(), strerror(errno));
+      printf("Jeremy LinkImage 7");
       return false;
     }
   } else if (extinfo && (extinfo->flags & ANDROID_DLEXT_USE_RELRO)) {
@@ -3740,6 +3762,7 @@ bool soinfo::link_image(const soinfo_list_t& global_group, const soinfo_list_t& 
                                  extinfo->relro_fd) < 0) {
       DL_ERR("failed mapping GNU RELRO section for \"%s\": %s",
              get_realpath(), strerror(errno));
+      printf("Jeremy LinkImage 8");
       return false;
     }
   }

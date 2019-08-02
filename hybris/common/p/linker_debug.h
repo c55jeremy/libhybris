@@ -55,7 +55,7 @@
 
 #include <unistd.h>
 
-#include "codebase/bionic/libc/async_safe/log.h"
+#include <async_safe/log.h>
 
 __LIBC_HIDDEN__ extern int g_ld_debug_verbosity;
 

@@ -34,11 +34,12 @@
 #include <string>
 #include <unordered_map>
 
-#include "codebase/bionic/libc/async_safe/log.h"
+#include <async_safe/log.h>
 
 #define DL_ERR(fmt, x...) \
     do { \
       async_safe_format_buffer(linker_get_error_buffer(), linker_get_error_buffer_size(), fmt, ##x); \
+      printf("DL_ERR: mesg＝%s\n", linker_get_error_buffer());\
     } while (false)
 
 #define DL_WARN(fmt, x...) \

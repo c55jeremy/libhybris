@@ -102,6 +102,7 @@ int main(int argc, char **argv)
 	EGLBoolean rv;
 
 	display = eglGetDisplay(NULL);
+	printf("\n==\nDisplay = %d\n==\n", display);
 	assert(eglGetError() == EGL_SUCCESS);
 	assert(display != EGL_NO_DISPLAY);
 

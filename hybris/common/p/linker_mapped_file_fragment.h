@@ -30,7 +30,7 @@
 
 #include <unistd.h>
 
-#include "codebase/bionic/libc/private/bionic_macros.h"
+#include "private/bionic_macros.h"
 
 class MappedFileFragment {
  public:

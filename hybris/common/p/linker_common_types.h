@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "codebase/bionic/libc/include/android/dlext.h"
+#include <android/dlext.h>
 #include "linked_list.h"
 
 // TODO(dimitry): move this to linker_defines.h? Unless it is removed by
