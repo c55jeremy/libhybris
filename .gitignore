@@ -29,6 +29,9 @@ aclocal-copy
 arm-*-linux-gnueabi-libtool
 
 # Generated .pc, .h and .c files
+hybris/binder/binder.pc
+hybris/binder/libutils/utils.pc
+hybris/binder/libcutils/cutils.pc
 hybris/camera/libcamera.pc
 hybris/documentation.list
 hybris/egl/egl.pc
@@ -60,6 +63,7 @@ hybris/utils/setprop
 
 # Test binaries
 hybris/tests/test_p
+hybris/tests/test_binder
 hybris/tests/test_audio
 hybris/tests/test_camera
 hybris/tests/test_egl_configs
