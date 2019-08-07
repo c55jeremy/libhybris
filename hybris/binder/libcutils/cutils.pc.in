@@ -1,0 +1,10 @@
+prefix=@prefix@
+exec_prefix=${prefix}
+libdir=@libdir@
+includedir=@includedir@
+
+Name: cutils
+Description: libhybris cutils library
+Version: @VERSION@
+Libs: -L${libdir} -lcutils
+Cflags: -I${includedir}

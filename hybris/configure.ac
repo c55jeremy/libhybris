@@ -299,6 +299,12 @@ AC_CONFIG_FILES([
 	hwc2/libhwc2.pc
 	opencl/Makefile
 	opencl/OpenCL.pc
+	binder/binder.pc
+	binder/Makefile
+	binder/libcutils/cutils.pc
+	binder/libcutils/Makefile
+	binder/libutils/utils.pc
+	binder/libutils/Makefile
 	tests/Makefile
 ])
 

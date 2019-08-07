@@ -16,7 +16,10 @@ bin_PROGRAMS = \
 	test_hwc2 \
 	test_hwcomposer \
 	test_nfc \
-	test_p
+	test_p \
+	test_binder
+
+##test_binder
 
 if WANT_WAYLAND
 bin_PROGRAMS += test_camera
@@ -27,7 +30,27 @@ test_p_CFLAGS = -I$(top_srcdir)/include
 test_p_LDADD = \
     -lm \
     $(top_builddir)/common/libhybris-common.la
-     
+
+test_binder_SOURCES = test_binder.cpp
+
+test_binder_CXXFLAGS = \
+    -pthread -D__HYBRIS__\
+    -I$(top_srcdir)/include \
+    -I$(top_srcdir)/include/android/system/core/libutils/include \
+    -I$(top_srcdir)/include/android/system/core/base/include \
+    -I$(top_srcdir)/include/android/frameworks/native/libs/binder/include \
+    -I$(top_srcdir)/include/android/frameworks/native/libs/math/include \
+    -I$(top_srcdir)/include/android/frameworks/native/libs/gui/include \
+    -I$(top_srcdir)/include/android/frameworks/native/libs/ui/include \
+    -I$(top_srcdir)/include/android/system/libhidl/base/include \
+    -I$(top_srcdir)/include/android/system/libhidl/transport/token/1.0/utils/include \
+    -I$(top_srcdir)/include/android/autogen
+
+test_binder_LDADD = \
+    $(top_builddir)/binder/libbinder.la \
+    $(top_builddir)/binder/libcutils/libcutils.la \
+    $(top_builddir)/binder/libutils/libutils.la
+    
 ##	$(top_builddir)/common/p/p.la
 
 test_audio_SOURCES = test_audio.c
